@@ -1,3 +1,6 @@
+# Caffe-GDP
+Modification on Caffe, which enables auto channel pruning on convolution layers, refering to a newly accepted paper at IJCAI18, [Accelerating Convolutional Networks via Global & Dynamic Filter Pruning](https://www.ijcai.org/proceedings/2018/0336.pdf).
+
 # Caffe
 
 [![Build Status](https://travis-ci.org/BVLC/caffe.svg?branch=master)](https://travis-ci.org/BVLC/caffe)

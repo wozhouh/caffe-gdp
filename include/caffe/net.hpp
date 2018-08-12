@@ -216,7 +216,7 @@ class Net {
   }
   inline int filter_num() const { return filter_num_; }
 
-  // wozhouh
+  // wozhouh: to update the mask according the ranking of filter-wise contribution
   void update_filter_contrib_total(float pruning_rate);
 
   bool has_blob(const string& blob_name) const;
@@ -339,9 +339,9 @@ class Net {
   /// The bytes of memory used by this net
   size_t memory_used_;
 
-  // wozhouh
+  // wozhouh: vector for collecting the contribution of every filter of convolution layers
   vector<Dtype> filter_contrib_total_;
-  vector<int> conv_layer_ids_;
+  vector<int> conv_layer_ids_; 
   int filter_num_;
 
   /// Whether to compute and display debug info for the net.

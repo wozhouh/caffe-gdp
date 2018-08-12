@@ -130,7 +130,7 @@ class Solver {
   Timer iteration_timer_;
   float iterations_last_;
 
-  // wozhouh
+  // wozhouh: newly added parameters at "solver.prototxt"
   bool is_pruning;
   float pruning_rate;
   int mask_update_step;
@@ -138,6 +138,7 @@ class Solver {
   string mask_policy;
   string log_type;
   string log_name;
+  // prints the trained mask into file after pruning
   bool PrintContribToFile();
 
   DISABLE_COPY_AND_ASSIGN(Solver);

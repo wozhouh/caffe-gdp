@@ -165,7 +165,7 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     }
   }
 
-  // wozhouh
+  // wozhouh: initialization of newly added members 
   for (int layer_id = 0; layer_id < layers_.size(); ++layer_id) {
     string type(layers_[layer_id] -> type());
     if(type == "Convolution"){

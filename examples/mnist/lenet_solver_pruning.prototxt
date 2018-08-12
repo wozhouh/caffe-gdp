@@ -24,7 +24,7 @@ snapshot_prefix: "examples/mnist/lenet"
 # solver mode: CPU or GPU
 solver_mode: GPU
 
-# wozhouh
+# wozhouh: parameters for global and dynamic pruning
 is_pruning: true
 pruning_rate: 0.7
 mask_update_step: 3

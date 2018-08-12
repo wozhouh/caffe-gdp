@@ -124,7 +124,7 @@ void SGDSolver<Dtype>::ClipGradients() {
 template <typename Dtype>
 void SGDSolver<Dtype>::ApplyUpdate() {
 
-  // wozhouh
+  // wozhouh: call to update the mask of filters right after backward propagation (diff of weight blobs not revised yet)
   int mask_update_interval = 0;
   if(this -> param_.is_pruning()){
    mask_update_interval = GetMaskUpdateInterval();

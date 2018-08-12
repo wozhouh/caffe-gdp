@@ -26,7 +26,7 @@ class SGDSolver : public Solver<Dtype> {
   virtual void ApplyUpdate();
   Dtype GetLearningRate();
 
-  // wozhouh
+  // wozhouh: calculates the interval for mask-updating according to number of iterations taken
   int GetMaskUpdateInterval();
 
  protected:

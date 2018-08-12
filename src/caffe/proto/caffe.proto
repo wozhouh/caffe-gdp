@@ -256,7 +256,7 @@ message SolverParameter {
   // in repeated weights parameters separately.
   repeated string weights = 42;
 
-  // wozhouh
+  // wozhouh: parameters for global and dynamic pruning
   optional bool is_pruning = 43 [default = true];
   optional float pruning_rate = 44 [default = 1.0];
   optional int32 mask_update_step = 45 [default = 1];

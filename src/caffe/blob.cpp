@@ -410,65 +410,50 @@ void Blob<Dtype>::scale_diff(Dtype scale_factor) {
 
 // wozhouh
 template <typename Dtype>
-void Blob<Dtype>::init_filter_contrib_2D(){
-  filter_contrib_2D_.reserve(shape_[0]);
-  for(int k = 0; k < shape_[0]; ++k){
-    Dtype* contrib_2D = new Dtype[shape_[1]];
-    memset(contrib_2D, 0, sizeof(Dtype)*shape_[1]);
-    filter_contrib_2D_.push_back(contrib_2D);
-  }
-}
-
-// wozhouh
-template <typename Dtype>
 void Blob<Dtype>::init_filter_contrib_mask(){
-  init_filter_contrib_2D();
-  filter_contrib_.reserve(shape_[0]);
-  mask_.reserve(shape_[0]);
-  for(int k = 0; k < shape_[0]; ++k){
-    filter_contrib_.push_back(0.);
+  filter_contrib_2D_.reserve(shape(0));
+  filter_contrib_.reserve(shape(0));
+  filter_mask_.reserve(shape(0));
+  for(int k = 0; k < shape(0); ++k){
+    Dtype* contrib_2D = new Dtype[shape(1)];
+    memset(contrib_2D, 0, sizeof(Dtype) * shape(1));
+    filter_contrib_2D_.push_back(contrib_2D);
+    filter_contrib_.push_back(static_cast<Dtype>(0));
     mask_.push_back(1);
   }
-}
-
-// wozhouh
-template <typename Dtype>
-void Blob<Dtype>::update_filter_contrib_2D(){
-  const Dtype* data = cpu_data();
-  const Dtype* diff = cpu_diff();
-  int count_2D = shape_[2] * shape_[3];
-  for(int i = 0; i < shape_[0]; ++i){
-    for(int j = 0; j < shape_[1]; ++j){
-      int head_2D = (i * shape_[1] + j) * count_2D;
-      Dtype temp = static_cast<Dtype>(0);
-      for(int k = 0; k < count_2D; ++k){
-        temp += data[head_2D+k] * diff[head_2D+k];
-      } 
-      (filter_contrib_2D_[i])[j] = temp;
-    }
-  }
+  return;
 }
 
 // wozhouh
 template <typename Dtype>
 void Blob<Dtype>::update_filter_contrib(){
-  update_filter_contrib_2D();
-  for(int i = 0; i < shape_[0]; ++i){
-    Dtype temp = static_cast<Dtype>(0);
-    for(int j = 0; j < shape_[1]; ++j){
-      temp += (filter_contrib_2D_[i])[j];
+  const Dtype* data = cpu_data();
+  const Dtype* diff = cpu_diff();
+  int count_2D = shape(2) * shape(3);
+  for(int i = 0; i < shape(0); ++i){
+  	Dtype temp_3D = static_cast<Dtype>(0);
+    for(int j = 0; j < shape(1); ++j){
+      int head_2D = (i * shape(1) + j) * count_2D;
+      Dtype temp_2D = static_cast<Dtype>(0);
+      for(int k = 0; k < count_2D; ++k){
+        temp_2D += data[head_2D+k] * diff[head_2D+k];
+      } 
+      (filter_contrib_2D_[i])[j] = temp_2D;
+      temp_3D += (filter_contrib_2D_[i])[j];
     }
     filter_contrib_[i] = fabs(temp);
   }
+  return;
 }
 
 // wozhouh
 template <typename Dtype>
 void Blob<Dtype>::update_mask(Dtype thresh){
-  for(int k = 0; k < shape_[0]; ++k){
-    if(filter_contrib_[k] >= thresh){mask_[k] = 1;}
-    else{mask_[k] = 0;}
+  for(int k = 0; k < shape(0); ++k){
+    if(filter_contrib_[k] >= thresh){filter_mask_[k] = 1;}
+    else{filter_mask_[k] = 0;}
   }
+  return;
 }
 
 template <typename Dtype>

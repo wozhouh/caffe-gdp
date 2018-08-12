@@ -273,16 +273,14 @@ class Blob {
   inline const vector<Dtype>& filter_contrib() const {
     return filter_contrib_;
   }
-  inline const vector<int>& mask() const {
-    return mask_;
+  inline const vector<int>& filter_mask() const {
+    return filter_mask_;
   }
 
   // wozhouh
   void init_filter_contrib_mask();
   void update_filter_contrib();
-  void init_filter_contrib_2D();
-  void update_filter_contrib_2D();
-  void update_mask(Dtype thresh);
+  void update_filter_mask(Dtype thresh);
 
  protected:
   shared_ptr<SyncedMemory> data_;
@@ -295,7 +293,7 @@ class Blob {
   // wozhouh
   vector<Dtype*> filter_contrib_2D_;
   vector<Dtype> filter_contrib_;
-  vector<int> mask_;
+  vector<int> filter_mask_;
 
   DISABLE_COPY_AND_ASSIGN(Blob);
 };  // class Blob

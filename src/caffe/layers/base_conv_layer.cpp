@@ -179,6 +179,11 @@ void BaseConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   weight_offset_ = conv_out_channels_ * kernel_dim_ / group_;
   // Propagate gradients to the parameters (as directed by backward pass).
   this->param_propagate_down_.resize(this->blobs_.size(), true);
+
+  // wozhouh
+  shared_ptr<Blob<Dtype> > masked_weight_temp(new Blob<Dtype>());
+  masked_weight_ = masked_weight_temp;
+  masked_weight_ -> CopyFrom(*(this -> blobs_[0]), false, true);
 }
 
 template <typename Dtype>
@@ -319,6 +324,20 @@ void BaseConvolutionLayer<Dtype>::backward_cpu_bias(Dtype* bias,
     const Dtype* input) {
   caffe_cpu_gemv<Dtype>(CblasNoTrans, num_output_, out_spatial_dim_, 1.,
       input, bias_multiplier_.cpu_data(), 1., bias);
+}
+
+// wozhouh
+template <typename Dtype>
+void BaseConvolutionLayer<Dtype>::update_masked_weight(){
+  masked_weight_ -> CopyFrom(*(this -> blobs_[0]), false, true);
+  Dtype *masked_weight_data = masked_weight_ -> mutable_cpu_data();
+  int count_3D = masked_weight_ -> count(1);
+  for(int k = 0; k < masked_weight_ -> shape(0); ++k){
+    if(this -> blobs_[0] -> filter_mask()[k] == 0){
+      memset(masked_weight_data+k*count_3D, 0, sizeof(Dtype) * count_3D);
+    }
+  }
+  return;
 }
 
 #ifndef CPU_ONLY

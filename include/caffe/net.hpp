@@ -214,10 +214,10 @@ class Net {
   inline const vector<int>& conv_layer_ids() const {
     return conv_layer_ids_;
   }
-  inline int num_filters() const { return num_filters_; }
+  inline int filter_num() const { return filter_num_; }
 
   // wozhouh
-  void update_filter_contrib_total(float beta);
+  void update_filter_contrib_total(float pruning_rate);
 
   bool has_blob(const string& blob_name) const;
   const shared_ptr<Blob<Dtype> > blob_by_name(const string& blob_name) const;
@@ -342,7 +342,7 @@ class Net {
   // wozhouh
   vector<Dtype> filter_contrib_total_;
   vector<int> conv_layer_ids_;
-  int num_filters_;
+  int filter_num_;
 
   /// Whether to compute and display debug info for the net.
   bool debug_info_;

@@ -97,9 +97,6 @@ class Solver {
   // Make and apply the update value for the current iteration.
   virtual void ApplyUpdate() = 0;
 
-  // wozhouh
-  void PrintContribToFile();
-
  protected:
   string SnapshotFilename(const string extension);
   string SnapshotToBinaryProto();
@@ -132,6 +129,16 @@ class Solver {
   // Timing information, handy to tune e.g. nbr of GPUs
   Timer iteration_timer_;
   float iterations_last_;
+
+  // wozhouh
+  bool is_pruning;
+  float pruning_rate;
+  int mask_update_step;
+  int mask_update_stepsize;
+  string mask_policy;
+  string log_type;
+  string log_name;
+  bool PrintContribToFile();
 
   DISABLE_COPY_AND_ASSIGN(Solver);
 };

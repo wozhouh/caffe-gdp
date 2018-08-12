@@ -255,6 +255,15 @@ message SolverParameter {
   // weights parameter separated by ',' (like in a command string) or
   // in repeated weights parameters separately.
   repeated string weights = 42;
+
+  // wozhouh
+  optional bool is_pruning = 43 [default = true];
+  optional float pruning_rate = 44 [default = 1.0];
+  optional int32 mask_update_step = 45 [default = 1];
+  optional int32 mask_update_stepsize = 46 [default = 1000];
+  optional string mask_policy = 47 [default = "minus"];
+  optional string log_type = 48 [default = "debug"]; // "debug" or "release"
+  optional string log_name = 49 [default = "mask.log"];
 }
 
 // A message that stores the solver snapshots

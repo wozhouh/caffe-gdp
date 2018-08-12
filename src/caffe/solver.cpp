@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <iostream>
+#include <cmath>
 
 #include "boost/algorithm/string.hpp"
 #include "caffe/solver.hpp"
@@ -334,8 +334,11 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   LOG(INFO) << "Optimization Done.";
 
   // wozhouh
-  LOG(INFO) << "Printing the contribution of weight blobs into file.";
-  PrintContribToFile();
+  if(PrintContribToFile()){
+    LOG(INFO) << "Printing the mask of convolution layers into file.";
+  }else{
+    LOG(INFO) << "Failed to print the mask into file.";
+  }
 }
 
 template <typename Dtype>
@@ -509,30 +512,36 @@ void Solver<Dtype>::UpdateSmoothedLoss(Dtype loss, int start_iter,
 
 // wozhouh
 template <typename Dtype>
-void Solver<Dtype>::PrintContribToFile(){
-  string directory = "examples/mnist/log/";
-  string prefix = "layer_";
-  string postfix = ".log";
-  vector<int> conv_layers(this -> net_ -> conv_layer_ids());
-  for(int layer_id = 0; layer_id < conv_layers.size(); ++layer_id){
-    stringstream ss;
-    string full_name;
-    ss << directory << prefix << conv_layers[layer_id] << postfix;
-    ss >> full_name;
-    std::ofstream outfile;
-    outfile.open(full_name.c_str());
-    if(outfile.is_open()){
-	    vector<int> shape(this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> shape());
-	    outfile << "shape: " << shape[0] << "*" << shape[1] << "*" << shape[2] << "*" << shape[3] << std::endl;
-	    for(int k = 0; k < shape[0]; ++k){
-	      outfile << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_contrib()[k] << " "
-	              << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> mask()[k] << std::endl;
-	    }
-	    outfile.close();
-	  }else{
-		  LOG(INFO) << "Failed to write the file.";
-	  }
+bool Solver<Dtype>::PrintContribToFile(){
+  string log_name = this -> param_.log_name();
+  std::ofstream outfile;
+  outfile.open(log_name.c_str());
+  if(outfile.is_open()){
+    vector<int> conv_layers(this -> net_ -> conv_layer_ids());
+    for(int layer_id = 0; layer_id < conv_layers.size(); ++layer_id){ 
+      vector<int> shape(this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> shape());
+      if(this -> param_.log_type() == "debug"){                 	    
+        int count = this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> count();
+  	    outfile << "layer: " << conv_layers[layer_id] 
+                << " shape: " << shape[0] << "*" << shape[1] << "*" << shape[2] << "*" << shape[3] 
+                << "=" << count << std::endl;
+  	    for(int k = 0; k < shape[0]; ++k){
+  	      outfile << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_contrib()[k] << " "
+  	              << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_mask()[k] << std::endl;
+  	    }
+        outfile << std::endl;
+      }else{    
+        for(int k = 0; k < shape.size(); ++k){
+          outfile << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_mask()[k] << " ";
+        }
+        outfile << std::endl;
+      }
+    }
+    outfile.close();
+  }else{
+      return false;
   }
+  return true;
 }
 
 INSTANTIATE_CLASS(Solver);

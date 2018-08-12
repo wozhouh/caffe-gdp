@@ -69,6 +69,22 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
   return rate;
 }
 
+// wozhouh
+template <typename Dtype>
+int SGDSolver<Dtype>::GetMaskUpdateInterval(){
+  int step = this -> param_.mask_update_step();
+  int stepsize = this -> param_.mask_update_stepsize();
+  int mask_update_interval;
+  int stage_temp = step - this->iter_ / stepsize;
+  int stage = stage_temp > 0? stage_temp: 1;
+  if(this -> param_.mask_policy() == "minus"){
+    mask_update_interval = stage;
+  }else{
+    mask_update_interval = pow(2, stage-1);
+  }
+  return mask_update_interval;
+}
+
 template <typename Dtype>
 void SGDSolver<Dtype>::PreSolve() {
   // Initialize the history
@@ -107,16 +123,20 @@ void SGDSolver<Dtype>::ClipGradients() {
 
 template <typename Dtype>
 void SGDSolver<Dtype>::ApplyUpdate() {
+
+  // wozhouh
+  int mask_update_interval = 0;
+  if(this -> param_.is_pruning()){
+   mask_update_interval = GetMaskUpdateInterval();
+   if((this->iter_+1) % mask_update_interval == 0){this -> net_ -> update_filter_contrib_total(this -> param_.pruning_rate());}
+  }
+
   Dtype rate = GetLearningRate();
   if (this->param_.display() && this->iter_ % this->param_.display() == 0) {
     LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << this->iter_
-        << ", lr = " << rate;
+        << ", lr = " << rate << ", mi = " << mask_update_interval;
   }
   ClipGradients();
-
-  // wozhouh
-  float beta = 0.8;
-  this -> net_ -> update_filter_contrib_total(beta); // test
 
   for (int param_id = 0; param_id < this->net_->learnable_params().size();
        ++param_id) {

@@ -1,7 +1,6 @@
 #include <climits>
 #include <vector>
 #include <cmath>
-#include "string.h"
 
 #include "caffe/blob.hpp"
 #include "caffe/common.hpp"
@@ -411,6 +410,7 @@ void Blob<Dtype>::scale_diff(Dtype scale_factor) {
 // wozhouh
 template <typename Dtype>
 void Blob<Dtype>::init_filter_contrib_mask(){
+  CHECK_EQ(num_axes(), 4);
   filter_contrib_2D_.reserve(shape(0));
   filter_contrib_.reserve(shape(0));
   filter_mask_.reserve(shape(0));
@@ -419,7 +419,7 @@ void Blob<Dtype>::init_filter_contrib_mask(){
     memset(contrib_2D, 0, sizeof(Dtype) * shape(1));
     filter_contrib_2D_.push_back(contrib_2D);
     filter_contrib_.push_back(static_cast<Dtype>(0));
-    mask_.push_back(1);
+    filter_mask_.push_back(1);
   }
   return;
 }
@@ -429,7 +429,7 @@ template <typename Dtype>
 void Blob<Dtype>::update_filter_contrib(){
   const Dtype* data = cpu_data();
   const Dtype* diff = cpu_diff();
-  int count_2D = shape(2) * shape(3);
+  int count_2D = count(2);
   for(int i = 0; i < shape(0); ++i){
   	Dtype temp_3D = static_cast<Dtype>(0);
     for(int j = 0; j < shape(1); ++j){
@@ -441,14 +441,14 @@ void Blob<Dtype>::update_filter_contrib(){
       (filter_contrib_2D_[i])[j] = temp_2D;
       temp_3D += (filter_contrib_2D_[i])[j];
     }
-    filter_contrib_[i] = fabs(temp);
+    filter_contrib_[i] = fabs(temp_3D);
   }
   return;
 }
 
 // wozhouh
 template <typename Dtype>
-void Blob<Dtype>::update_mask(Dtype thresh){
+void Blob<Dtype>::update_filter_mask(Dtype thresh){
   for(int k = 0; k < shape(0); ++k){
     if(filter_contrib_[k] >= thresh){filter_mask_[k] = 1;}
     else{filter_mask_[k] = 0;}

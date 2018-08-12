@@ -61,7 +61,7 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
   memory_used_ = 0;
 
   // wozhouh
-  num_filters_ = 0;
+  filter_num_ = 0;
 
   // For each layer, set up its input and output
   bottom_vecs_.resize(param.layer_size());
@@ -171,10 +171,10 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     if(type == "Convolution"){
       conv_layer_ids_.push_back(layer_id);
       layers_[layer_id] -> blobs()[0] -> init_filter_contrib_mask();
-      num_filters_ += layers_[layer_id] -> blobs()[0] -> shape()[0];
+      filter_num_ += layers_[layer_id] -> blobs()[0] -> shape(0);
     }
   }
-  filter_contrib_total_.reserve(num_filters_);
+  filter_contrib_total_.reserve(filter_num_);
 
   // Go through the net backwards to determine which blobs contribute to the
   // loss.  We can skip backward computation for blobs that don't contribute
@@ -994,8 +994,9 @@ const shared_ptr<Layer<Dtype> > Net<Dtype>::layer_by_name(
 
 // wozhouh
 template <typename Dtype>
-void Net<Dtype>::update_filter_contrib_total(float beta){
-  int thresh_idx = static_cast<int>((1. - beta) * num_filters_);
+void Net<Dtype>::update_filter_contrib_total(float pruning_rate){
+  float thresh_idx_temp = (1. - pruning_rate) * filter_num_;
+  int thresh_idx = static_cast<int>(thresh_idx_temp);
   filter_contrib_total_.clear();
   for(int layer_id = 0; layer_id < conv_layer_ids_.size(); ++layer_id){
     layers_[conv_layer_ids_[layer_id]] -> blobs()[0] -> update_filter_contrib(); 
@@ -1006,7 +1007,7 @@ void Net<Dtype>::update_filter_contrib_total(float beta){
   std::sort(filter_contrib_total_.begin(), filter_contrib_total_.end());
   Dtype thresh = filter_contrib_total_[thresh_idx];
   for(int layer_id = 0; layer_id < conv_layer_ids_.size(); ++layer_id){
-    layers_[conv_layer_ids_[layer_id]] -> blobs()[0] -> update_mask(thresh);
+    layers_[conv_layer_ids_[layer_id]] -> blobs()[0] -> update_filter_mask(thresh);
   }
 }
 

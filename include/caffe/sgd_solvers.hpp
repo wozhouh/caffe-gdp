@@ -26,6 +26,9 @@ class SGDSolver : public Solver<Dtype> {
   virtual void ApplyUpdate();
   Dtype GetLearningRate();
 
+  // wozhouh
+  int GetMaskUpdateInterval();
+
  protected:
   void PreSolve();
   virtual void Normalize(int param_id);

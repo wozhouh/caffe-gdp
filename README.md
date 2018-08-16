@@ -5,7 +5,7 @@ The following will firstly describe how GDP is implemented based on the original
 
 ## Inplementation
 
-Note that when a CNN is training, the update of weights goes through thousands of iterations below,
+Note that when a CNN is training, the update of weights goes through thousands of such iterations as defined at [src/caffe/solver.cpp](https://github.com/wozhouh/caffe-gdp/blob/master/src/caffe/solver.cpp),
 
  ... -> `Forward` -> loss -> `Backward` -> diff -> `Regurization` -> ammended diff -> `Update`-> new weights -> ...
  

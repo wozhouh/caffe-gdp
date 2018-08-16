@@ -1,6 +1,14 @@
 # Caffe-GDP
-Modification on Caffe, which enables auto channel pruning on convolution layers, refering to a newly accepted paper at IJCAI18, [Accelerating Convolutional Networks via Global & Dynamic Filter Pruning](https://www.ijcai.org/proceedings/2018/0336.pdf). The paper is based on TensorFlow originally.
+Caffe-GDP is a branch of [Caffe](https://github.com/BVLC/caffe), which adds a few lines of code in order to enable a global and dynamic filter pruning (GDP) on convolution layers of typical CNN architecture, as described in a newly accepted paper at IJCAI18, [Accelerating Convolutional Networks via Global & Dynamic Filter Pruning](https://www.ijcai.org/proceedings/2018/0336.pdf). The paper mentioned is based on TensorFlow originally. 
 
+The following will firstly describe how GDP is implemented based on the original Caffe framework, then a guidance to perform GDP on a CNN. If you do not care about details, feel free to skip the first part.
+
+## Inplementation
+
+Note that when a CNN is training, the update of weights goes through thousands of such iterations as defined at [src/caffe/solver.cpp](https://github.com/wozhouh/caffe-gdp/blob/master/src/caffe/solver.cpp),
+
+ ... -> `Forward` -> loss -> `Backward` -> diff -> `Regurization` -> ammended diff -> `Update`-> new weights -> ...
+ 
 Firstly train the model from scratch with "is_pruning: false" at "solver.prototxt" to finish step-1 training and get a caffemodel, then turn on "is_pruning" and set the necessary parameters for pruning (refer to [train_lenet_pruning.prototxt](https://github.com/wozhouh/caffe-gdp/blob/master/examples/mnist/lenet_solver_pruning.prototxt)) to start the step-2 global and dynamic channel pruning and get a "mask.log" indicating which channel of convolution layers to prune.
 
 # Caffe

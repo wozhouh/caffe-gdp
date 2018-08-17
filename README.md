@@ -7,9 +7,9 @@ The following will introduce how GDP is implemented based on the original Caffe 
 
 New members added to the data structure are listed as below.
 
-|**New members** | |
+|**New Members** | |
 |---| :---: |
-|Blob| |
+|**Blob**| |
 |vector<Dtype*> filter_contribution_2D_; |the channel-wise contribution of filters at the convolution layer |
 |vector<Dtype> filter_contrib_; |the contribution of filters at the convolution layer |
 |vector<int> filter_mask_; |the mask of filters at the convolution layer |
@@ -28,7 +28,7 @@ Caffe-GDP's iteration is different that it updates the mask of weight blob accor
 
 Here are the newly added super-parameters at caffe.proto.
 
-|**super-parameters** | meaning| default|
+|**Super-Parameters** | Meaning| Default|
 |---| :---: | :---: |
 |is_pruning |whether to perform GDP |false |
 |pruning_rate |the remaining proportion of filters |1.0 |
@@ -52,7 +52,8 @@ The following is a guideline to perform GDP to a typical CNN, taking LeNet5 as a
 
 `python ./python/auto_caffemodel_pruning.py`
 
-4 (Optional)Fine-Tune
+4 (Optional) Fine-Tune
+
 `./build/tools/caffe train -solver examples/mnist/lenet_solver_finetune.prototxt -weights examples/mnist/lenet_iter_3000_pruned.caffemodel`
 
 Now when GDP is finished, we get a caffemodel of about 799kB (pruning_rate: 0.5), which is only 47.4% of the original 1684kB with an accuracy of 98.91% compared to 99.02%. 

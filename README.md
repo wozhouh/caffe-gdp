@@ -5,9 +5,24 @@ The following will firstly describe how GDP is implemented based on the original
 
 ## Inplementation
 
-Note that when a CNN is training, the update of weights goes through thousands of such iterations as defined at [src/caffe/solver.cpp](https://github.com/wozhouh/caffe-gdp/blob/master/src/caffe/solver.cpp),
+New member is added to the data structure listes as below
 
- ... -> `Forward` -> loss -> `Backward` -> diff -> `Regurization` -> ammended diff -> `Update`-> new weights -> ...
+|**New members** | |
+|---| :---: |
+|Blob| |
+|vector<Dtype*> filter_contribution_2D_; |the channel-wise contribution of filters at the convolution layer |
+|vector<Dtype> filter_contrib_; |the contribution of filters at the convolution layer |
+|vector<int> filter_mask_; |the mask of filters at the convolution layer |
+|**Net** | |
+|vector<int> conv_layer_ids_; |the IDs of convolution layers in the net |
+|int num_filter_total_; | the total numbers of filters in the net |
+|vector<Dtype> filter_contrib_total_; | the collection of filter-wise contribution in the net |
+|**BaseConvolutionLayer** | |
+|shared_ptr<Blob<Dtype> > masked_weight_; |the weight blob which is masked and takes part in forward and backward |
+|**Solver** | |
+|is_pruning etc| added super-parameters at caffe.proto|
+ 
+The GDP iterations is 
  
 Firstly train the model from scratch with "is_pruning: false" at "solver.prototxt" to finish step-1 training and get a caffemodel, then turn on "is_pruning" and set the necessary parameters for pruning (refer to [train_lenet_pruning.prototxt](https://github.com/wozhouh/caffe-gdp/blob/master/examples/mnist/lenet_solver_pruning.prototxt)) to start the step-2 global and dynamic channel pruning and get a "mask.log" indicating which channel of convolution layers to prune.
 

@@ -22,7 +22,7 @@ New members added to the data structure are listed as below.
 |**Solver** | |
 |is_pruning etc| added super-parameters at caffe.proto|
  
-The GDP iterations is different that it updates the mask according to the ranking of all filters right after back-prop and maked the weight blob before forward of the next iteration.
+Caffe-GDP's iteration is different that it updates the mask of weight blob according to the ranking of all filters right after backward propagation and masks the weight blob before forward operation of the next iteration.
 
 ## instruction
 
@@ -57,7 +57,7 @@ The following is a guideline to perform GDP to a typical CNN, taking LeNet5 as a
 
 Now when GDP is finished, we get a caffemodel of about 799kB (pruning_rate: 0.5), which is only 47.4% of the original 1684kB with an accuracy of 98.91% compared to 99.02%. 
 
-GDP is an automatic pruning method of typical CNN architect, which make is thinner and faster.
+GDP is an automatic pruning method of typical CNN architecture, which make it much thinner and faster.
 
 # Caffe
 

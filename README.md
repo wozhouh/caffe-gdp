@@ -1,11 +1,11 @@
 # Caffe-GDP
 Caffe-GDP is a branch of [Caffe](https://github.com/BVLC/caffe), which adds a few lines of code in order to enable a global and dynamic filter pruning (GDP) on convolution layers of typical CNN architecture, as described in a newly accepted paper at IJCAI18, [Accelerating Convolutional Networks via Global & Dynamic Filter Pruning](https://www.ijcai.org/proceedings/2018/0336.pdf). The paper mentioned is based on TensorFlow originally. 
 
-The following will firstly describe how GDP is implemented based on the original Caffe framework, then a guidance to perform GDP on a CNN. If you do not care about details, feel free to skip the first part.
+The following will introduce how GDP is implemented based on the original Caffe framework, then a guidance to perform GDP on a CNN. If you do not care about details, feel free to skip the first part.
 
 ## Inplementation
 
-New member is added to the data structure listes as below
+New members added to the data structure are listed as below.
 
 |**New members** | |
 |---| :---: |
@@ -18,13 +18,46 @@ New member is added to the data structure listes as below
 |int num_filter_total_; | the total numbers of filters in the net |
 |vector<Dtype> filter_contrib_total_; | the collection of filter-wise contribution in the net |
 |**BaseConvolutionLayer** | |
-|shared_ptr<Blob<Dtype> > masked_weight_; |the weight blob which is masked and takes part in forward and backward |
+|shared_ptr<Blob<Dtype> > masked_weight_; |the masked weight blob which takes part in forward and backward |
 |**Solver** | |
 |is_pruning etc| added super-parameters at caffe.proto|
  
-The GDP iterations is 
+The GDP iterations is different that it updates the mask according to the ranking of all filters right after back-prop and maked the weight blob before forward of the next iteration.
+
+## instruction
+
+Here are the newly added super-parameters at caffe.proto.
+
+|**super-parameters** | meaning| default|
+|---| :---: | :---: |
+|is_pruning |whether to perform GDP |false |
+|pruning_rate |the remaining proportion of filters |1.0 |
+|mask_updating_step | steps of mask updating interval| 1|
+|mask_updating_stepsize | how often is the interval changed| 1000|
+|mi_policy | the pattern of how the interval is changed ("exp"/"minus") | "minus"|
+|log_type | the pattern of how the mask is printed ("debug"/"release") | "debug"|
+|log_name | the pattern of how the log of printed mask is named| "mask.log"|
+
+The following is a guideline to perform GDP to a typical CNN, taking LeNet5 as an example.
+
+1 Firstly enter the root directory of Caffe-GDP and train the net from scratch as usual, 
+
+`./build/tools/caffe train -solver examples/mnist/lenet_solver.prototxt`
+
+2 Then turn on the GDP at [prototxt](https://github.com/wozhouh/caffe-gdp/blob/master/examples/mnist/lenet_solver_pruning.prototxt) and set the necessary parameters
+
+`./build/tools/caffe train -solver examples/mnist/lenet_solver_pruning.prototxt -weights examples/mnist/lenet_iter_10000.caffemodel`
  
-Firstly train the model from scratch with "is_pruning: false" at "solver.prototxt" to finish step-1 training and get a caffemodel, then turn on "is_pruning" and set the necessary parameters for pruning (refer to [train_lenet_pruning.prototxt](https://github.com/wozhouh/caffe-gdp/blob/master/examples/mnist/lenet_solver_pruning.prototxt)) to start the step-2 global and dynamic channel pruning and get a "mask.log" indicating which channel of convolution layers to prune.
+3 Run a Python [script](https://github.com/wozhouh/caffe-gdp/blob/master/python/caffemodel_channel_pruning.py) to cut the caffemodel aotomatically according to mask.log
+
+`python ./python/auto_caffemodel_pruning.py`
+
+4 (Optional)Fine-Tune
+`./build/tools/caffe train -solver examples/mnist/lenet_solver_finetune.prototxt -weights examples/mnist/lenet_iter_3000_pruned.caffemodel`
+
+Now when GDP is finished, we get a caffemodel of about 799kB (pruning_rate: 0.5), which is only 47.4% of the original 1684kB with an accuracy of 98.91% compared to 99.02%. 
+
+GDP is an automatic pruning method of typical CNN architect, which make is thinner and faster.
 
 # Caffe
 

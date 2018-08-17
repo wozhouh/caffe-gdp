@@ -11,16 +11,16 @@ New members added to the data structure are listed as below.
 |---| :---: |
 |**Blob**| |
 |vector<Dtype*> filter_contribution_2D_; |the channel-wise contribution of filters at the convolution layer |
-|vector<Dtype> filter_contrib_; |the contribution of filters at the convolution layer |
-|vector<int> filter_mask_; |the mask of filters at the convolution layer |
+|vector\<Dtype\> filter_contrib_; |the contribution of filters at the convolution layer |
+|vector\<int\> filter_mask_; |the mask of filters at the convolution layer |
 |**Net** | |
-|vector<int> conv_layer_ids_; |the IDs of convolution layers in the net |
+|vector\<int\> conv_layer_ids_; |the IDs of convolution layers in the net |
 |int num_filter_total_; | the total numbers of filters in the net |
-|vector<Dtype> filter_contrib_total_; | the collection of filter-wise contribution in the net |
+|vector\<Dtype\> filter_contrib_total_; | the collection of filter-wise contribution in the net |
 |**BaseConvolutionLayer** | |
-|shared_ptr<Blob<Dtype> > masked_weight_; |the masked weight blob which takes part in forward and backward |
+|shared_ptr\<Blob\<Dtype\> \> masked_weight_; |the masked weight blob which takes part in forward and backward |
 |**Solver** | |
-|is_pruning etc| added super-parameters at caffe.proto|
+|is_pruning, etc| added super-parameters at caffe.proto|
  
 Caffe-GDP's iteration is different that it updates the mask of weight blob according to the ranking of all filters right after backward propagation and masks the weight blob before forward operation of the next iteration.
 
@@ -31,10 +31,10 @@ Here are the newly added super-parameters at caffe.proto.
 |**Super-Parameters** | Meaning| Default|
 |---| :---: | :---: |
 |is_pruning |whether to perform GDP |false |
-|pruning_rate |the remaining proportion of filters |1.0 |
-|mask_updating_step | steps of mask updating interval| 1|
-|mask_updating_stepsize | how often is the interval changed| 1000|
-|mi_policy | the pattern of how the interval is changed ("exp"/"minus") | "minus"|
+|pruning_rate |the remaining proportion of filters after GDP |1.0 |
+|mask_updating_step | total steps of mask updating interval| 1|
+|mask_updating_stepsize | how often is the mask updating interval changed| 1000|
+|mi_policy | the pattern of how the mask updating interval is changed ("exp"/"minus") | "minus"|
 |log_type | the pattern of how the mask is printed ("debug"/"release") | "debug"|
 |log_name | the pattern of how the log of printed mask is named| "mask.log"|
 

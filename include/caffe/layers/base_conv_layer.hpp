@@ -93,7 +93,7 @@ class BaseConvolutionLayer : public Layer<Dtype> {
   bool is_1x1_;
   bool force_nd_im2col_;
 
-  // wozhouh: to update the masked weight which affects forward and backward of convolution layers
+  // wozhouh: the weight blob which is set according to its mask which affects forward and backward directly
   shared_ptr<Blob<Dtype> > masked_weight_;
   void update_masked_weight();
 

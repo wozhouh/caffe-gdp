@@ -339,7 +339,7 @@ class Net {
   /// The bytes of memory used by this net
   size_t memory_used_;
 
-  // wozhouh: vector for collecting the contribution of every filter of convolution layers
+  // wozhouh: vector for collecting the contribution of every filter of convolution layers in the whole net
   vector<Dtype> filter_contrib_total_;
   vector<int> conv_layer_ids_; 
   int filter_num_;

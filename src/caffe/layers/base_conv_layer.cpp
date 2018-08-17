@@ -180,7 +180,7 @@ void BaseConvolutionLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   // Propagate gradients to the parameters (as directed by backward pass).
   this->param_propagate_down_.resize(this->blobs_.size(), true);
 
-  // wozhouh
+  // wozhouh: initialization
   shared_ptr<Blob<Dtype> > masked_weight_temp(new Blob<Dtype>());
   masked_weight_ = masked_weight_temp;
   masked_weight_ -> CopyFrom(*(this -> blobs_[0]), false, true);

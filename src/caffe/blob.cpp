@@ -407,7 +407,7 @@ void Blob<Dtype>::scale_diff(Dtype scale_factor) {
   }
 }
 
-// wozhouh
+// wozhouh: the contribution of filters will be set to all 0 and mask set to all 0 initially
 template <typename Dtype>
 void Blob<Dtype>::init_filter_contrib_mask(){
   CHECK_EQ(num_axes(), 4);
@@ -424,7 +424,7 @@ void Blob<Dtype>::init_filter_contrib_mask(){
   return;
 }
 
-// wozhouh
+// wozhouh: According to Taylor expansion, the gradient of weight blobs equals the multiplication of data and diff then sum them up
 template <typename Dtype>
 void Blob<Dtype>::update_filter_contrib(){
   const Dtype* data = cpu_data();
@@ -446,7 +446,7 @@ void Blob<Dtype>::update_filter_contrib(){
   return;
 }
 
-// wozhouh
+// wozhouh: the mask of filter of which the contribution higher than threshold will be set to 1 and otherwise set to 0
 template <typename Dtype>
 void Blob<Dtype>::update_filter_mask(Dtype thresh){
   for(int k = 0; k < shape(0); ++k){

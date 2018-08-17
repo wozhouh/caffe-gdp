@@ -45,7 +45,7 @@ def update_masked_prototxt(prototxt_in, prototxt_out):
 if __name__ == "__main__":
     
     # import pycaffe
-    caffe_root = '/home/bo718.wang/yong.a/pruning/wozhou.he/caffe/caffe-gdp/'
+    caffe_root = '/home/processyuan/caffe/caffe-gdp/'
     python_dir = caffe_root+'python/'
     sys.path.append(python_dir)
    
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     deploy_prototxt_in = workspace+'lenet.prototxt'
     train_prototxt_out = train_prototxt_in[0:-9] + '_pruned.prototxt'
     deploy_prototxt_out = deploy_prototxt_in[0:-9] + '_pruned.prototxt'
-    caffemodel_in = workspace+'lenet_iter_3000.caffemodel'
+    caffemodel_in = workspace+'lenet_iter_5000.caffemodel'
     caffemodel_out = caffemodel_in[0:-11]+ '_pruned.caffemodel'
     mask_log = workspace+'mask.log'
   

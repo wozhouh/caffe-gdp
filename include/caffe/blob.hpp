@@ -277,7 +277,7 @@ class Blob {
     return filter_mask_;
   }
 
-  // wozhouh: member function to initialize the contribution and mask for weight blob
+  // wozhouh: member function to initialize the contribution and mask for weight blob (of convolution layers only)
   void init_filter_contrib_mask();
   void update_filter_contrib();
   void update_filter_mask(Dtype thresh);
@@ -290,7 +290,7 @@ class Blob {
   int count_;
   int capacity_;
 
-  // wozhouh: filter-wise contribution and mask for weight blob (convolution layers only)
+  // wozhouh: filter-wise contribution and mask for weight blob (of convolution layers only)
   vector<Dtype*> filter_contrib_2D_;
   vector<Dtype> filter_contrib_;
   vector<int> filter_mask_;

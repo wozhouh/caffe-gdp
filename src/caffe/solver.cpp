@@ -334,10 +334,12 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   LOG(INFO) << "Optimization Done.";
 
   // wozhouh
-  if(PrintContribToFile()){
-    LOG(INFO) << "Printing the mask of convolution layers into file.";
-  }else{
-    LOG(INFO) << "Failed to print the mask into file.";
+  if(this -> param_.is_pruning()){
+    if(PrintContribToFile()){
+      LOG(INFO) << "Printing the mask of convolution layers into file.";
+    }else{
+      LOG(INFO) << "Failed to print the mask into file.";
+    }
   }
 }
 
@@ -519,8 +521,8 @@ bool Solver<Dtype>::PrintContribToFile(){
   if(outfile.is_open()){
     vector<int> conv_layers(this -> net_ -> conv_layer_ids());
     for(int layer_id = 0; layer_id < conv_layers.size(); ++layer_id){ 
-      vector<int> shape(this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> shape());
-      if(this -> param_.log_type() == "debug"){                 	    
+      if(this -> param_.log_type() == "debug"){   
+        vector<int> shape(this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> shape());              	    
         int count = this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> count();
   	    outfile << "layer: " << conv_layers[layer_id] 
                 << " shape: " << shape[0] << "*" << shape[1] << "*" << shape[2] << "*" << shape[3] 
@@ -530,9 +532,10 @@ bool Solver<Dtype>::PrintContribToFile(){
   	              << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_mask()[k] << std::endl;
   	    }
         outfile << std::endl;
-      }else{    
-        for(int k = 0; k < shape.size(); ++k){
-          outfile << this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_mask()[k] << " ";
+      }else{ 
+        vector<int> mask(this -> net_ -> layers()[conv_layers[layer_id]] -> blobs()[0] -> filter_mask());   
+        for(int k = 0; k < mask.size(); ++k){
+          outfile << mask[k] << " ";
         }
         outfile << std::endl;
       }

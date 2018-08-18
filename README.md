@@ -1,7 +1,7 @@
 # Caffe-GDP
 Caffe-GDP is a branch of [Caffe](https://github.com/BVLC/caffe), which adds a few lines of code in order to enable a global and dynamic filter pruning (GDP) on convolution layers of typical CNN architecture, as described in a newly accepted paper at IJCAI18, [Accelerating Convolutional Networks via Global & Dynamic Filter Pruning](https://www.ijcai.org/proceedings/2018/0336.pdf). The paper mentioned is based on TensorFlow originally. 
 
-The following will introduce how GDP is implemented based on the original Caffe framework, then a guidance to perform GDP on a CNN. If you do not care about details, feel free to skip the first part.
+The following will introduce how GDP is implemented based on the original Caffe framework, then a guidance to perform GDP on a typical CNN. If you do not care about details, feel free to skip the first part.
 
 ## Inplementation
 
@@ -20,13 +20,13 @@ New members added to the data structure are listed as below.
 |**BaseConvolutionLayer** | |
 |shared_ptr\<Blob\<Dtype\> \> masked_weight_; |the masked weight blob which takes part in forward and backward |
 |**Solver** | |
-|is_pruning, etc| added super-parameters at caffe.proto|
+|is_pruning, etc| newly added super-parameters for GDP at caffe.proto|
  
-Caffe-GDP's iteration is different that it updates the mask of weight blob according to the ranking of all filters right after backward propagation and masks the weight blob before forward operation of the next iteration.
+Caffe-GDP's iteration is different that it updates the mask of weight blob according to the ranking of all filters' contribution right after backward propagation and masks the weight blob before forward operation of the next iteration.
 
 ## instruction
 
-Here are the newly added super-parameters at caffe.proto.
+Here are an introduction of newly added super-parameters at caffe.proto.
 
 |**Super-Parameters** | Meaning| Default|
 |---| :---: | :---: |
@@ -40,7 +40,7 @@ Here are the newly added super-parameters at caffe.proto.
 
 The following is a guideline to perform GDP to a typical CNN, taking LeNet5 as an example.
 
-1 Firstly enter the root directory of Caffe-GDP and train the net from scratch as usual, 
+1 Firstly enter the root directory of Caffe-GDP and train the net from scratch as usual
 
 `./build/tools/caffe train -solver examples/mnist/lenet_solver.prototxt`
 
@@ -58,7 +58,7 @@ The following is a guideline to perform GDP to a typical CNN, taking LeNet5 as a
 
 Now when GDP is finished, we get a caffemodel of about 799kB (pruning_rate: 0.5), which is only 47.4% of the original 1684kB with an accuracy of 98.91% compared to 99.02%. 
 
-GDP is an automatic pruning method of typical CNN architecture, which make it much thinner and faster.
+GDP is a learnable pruning method for the typical CNN architecture, which make the net much thinner and faster, while maintaining the original level of accuracy.
 
 # Caffe
 

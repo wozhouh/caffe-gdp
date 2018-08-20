@@ -24,7 +24,7 @@ New members added to the data structure are listed as below.
  
 Caffe-GDP's iteration is different that it updates the mask of weight blob according to the ranking of all filters' contribution right after backward propagation and masks the weight blob before forward operation of the next iteration.
 
-## instruction
+## Instruction
 
 Here are an introduction of newly added super-parameters at caffe.proto.
 

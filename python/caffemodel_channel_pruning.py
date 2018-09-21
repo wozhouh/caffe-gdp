@@ -22,7 +22,7 @@ def read_mask_log(mask_log):
 
 def update_masked_prototxt(prototxt_in, prototxt_out):
     f_r = open(prototxt_in, "r")
-    lines = f_r.readlines();
+    lines = f_r.readlines()
     with open(prototxt_out, "w") as f_w:
         layer_found = False
         all_found = False
